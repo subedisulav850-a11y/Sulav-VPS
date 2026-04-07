@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ server_name }} | Sulav Hosting</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{background:#0a0a0f;color:#e5e7eb;font-family:'Inter',sans-serif;min-height:100vh;display:flex}
+    aside{width:220px;background:#0d0d14;border-right:1px solid #1a1a24;display:flex;flex-direction:column;flex-shrink:0;min-height:100vh}
+    .sidebar-logo{padding:20px;border-bottom:1px solid #1a1a24;display:flex;align-items:center;gap:10px}
+    .logo-icon{width:32px;height:32px;background:linear-gradient(135deg,#7c3aed,#5b21b6);border-radius:8px;display:flex;align-items:center;justify-content:center}
+    .logo-icon svg{width:16px;height:16px;fill:#fff}
+    .logo-name{font-size:14px;font-weight:700}
+    .logo-sub{font-size:10px;color:#6b7280}
+    nav{flex:1;padding:16px 10px}
+    nav p.nav-label{font-size:10px;font-weight:600;color:#374151;text-transform:uppercase;letter-spacing:.1em;margin:0 8px 8px}
+    nav a{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;text-decoration:none;color:#9ca3af;font-size:13px;font-weight:500;transition:all .2s;margin-bottom:2px}
+    nav a:hover{background:#1a1a24;color:#e5e7eb}
+    .sidebar-footer{padding:16px;border-top:1px solid #1a1a24;display:flex;align-items:center;gap:6px}
+    .status-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+    .status-text{font-size:11px;color:#6b7280}
+    main{flex:1;padding:28px;min-width:0}
+    .page-header{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+    .back-btn{width:32px;height:32px;border-radius:8px;background:#1a1a24;border:1px solid #2a2a3a;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .2s;text-decoration:none;color:#9ca3af}
+    .back-btn:hover{background:#2a2a3a;color:#fff}
+    .header-info{flex:1}
+    .header-title{display:flex;align-items:center;gap:10px}
+    .server-title{font-size:20px;font-weight:700;color:#fff}
+    .badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500}
+    .badge-running{background:rgba(34,197,94,.1);color:#4ade80}
+    .badge-stopped{background:rgba(107,114,128,.1);color:#9ca3af}
+    .badge-dot{width:5px;height:5px;border-radius:50%;background:currentColor}
+    .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:none;transition:all .2s;font-family:'Inter',sans-serif}
+    .btn-green{background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.2)}
+    .btn-green:hover{background:rgba(34,197,94,.25)}
+    .btn-red{background:rgba(239,68,68,.1);color:#f87171;border:1px solid rgba(239,68,68,.2)}
+    .btn-red:hover{background:rgba(239,68,68,.2)}
+    .btn-purple{background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#fff;border:none}
+    .btn-purple:hover{opacity:.9}
+    .btn-ghost{background:#1a1a24;color:#9ca3af;border:1px solid #2a2a3a}
+    .btn-ghost:hover{background:#2a2a3a;color:#fff}
+    .btn-danger-sm{background:transparent;color:#6b7280;border:none;padding:4px 8px;font-size:11px;cursor:pointer;border-radius:6px;transition:all .2s;font-family:'Inter',sans-serif}
+    .btn-danger-sm:hover{color:#f87171;background:rgba(239,68,68,.1)}
+    /* Tabs */
+    .tabs{display:flex;gap:2px;background:#111118;border:1px solid #1a1a24;border-radius:10px;padding:4px;width:fit-content;margin-bottom:20px}
+    .tab{padding:7px 14px;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;color:#6b7280;transition:all .2s;border:none;background:transparent;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:6px}
+    .tab.active{background:#1e1e2e;color:#e5e7eb}
+    .tab-panel{display:none}
+    .tab-panel.active{display:block}
+    /* Upload zone */
+    .upload-zone{border:2px dashed #2a2a3a;border-radius:12px;padding:36px;text-align:center;cursor:pointer;transition:all .2s;background:#111118}
+    .upload-zone:hover,.upload-zone.drag{border-color:#7c3aed;background:rgba(124,58,237,.05)}
+    .upload-title{font-size:15px;font-weight:600;color:#e5e7eb;margin:8px 0 4px}
+    .upload-sub{font-size:12px;color:#6b7280}
+    .upload-note{font-size:11px;color:#374151;margin-top:8px}
+    /* File list */
+    .card{background:#111118;border:1px solid #1a1a24;border-radius:12px;overflow:hidden}
+    .card-header{padding:12px 16px;border-bottom:1px solid #1a1a24;display:flex;align-items:center;justify-content:space-between}
+    .card-title{font-size:12px;font-weight:600;color:#9ca3af}
+    .file-row{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid #111118;transition:background .2s;font-size:13px}
+    .file-row:last-child{border-bottom:none}
+    .file-row:hover{background:#1a1a24}
+    .file-icon{width:20px;height:20px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+    .file-name{flex:1;font-family:'JetBrains Mono',monospace;color:#d1d5db;font-size:12px}
+    .file-name.main{color:#a78bfa;font-weight:600}
+    .file-size{font-size:11px;color:#4b5563;font-family:'JetBrains Mono',monospace}
+    .main-badge{background:rgba(124,58,237,.15);color:#a78bfa;font-size:10px;padding:2px 7px;border-radius:10px;border:1px solid rgba(124,58,237,.2)}
+    /* Package installer */
+    .pkg-input-row{display:flex;gap:8px;margin-bottom:16px}
+    .pkg-input{flex:1;padding:9px 12px;background:#1a1a24;border:1px solid #2a2a3a;border-radius:8px;color:#fff;font-size:13px;font-family:'JetBrains Mono',monospace;outline:none;transition:border-color .2s}
+    .pkg-input:focus{border-color:#7c3aed}
+    .pkg-input::placeholder{color:#4b5563}
+    .popular-label{font-size:11px;color:#6b7280;margin-bottom:10px;font-weight:500}
+    .pkg-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+    .pkg-chip{padding:6px 12px;background:#1a1a24;border:1px solid #2a2a3a;border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#9ca3af;cursor:pointer;transition:all .2s}
+    .pkg-chip:hover{border-color:#7c3aed;color:#a78bfa;background:rgba(124,58,237,.08)}
+    .pkg-chip.installed{border-color:rgba(34,197,94,.3);color:#4ade80;background:rgba(34,197,94,.05);cursor:default}
+    .pkg-row{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid #111118;font-size:13px}
+    .pkg-row:last-child{border-bottom:none}
+    .pkg-name{flex:1;font-family:'JetBrains Mono',monospace;color:#d1d5db;font-size:12px}
+    .pkg-date{font-size:11px;color:#4b5563}
+    /* Settings */
+    .settings-card{background:#111118;border:1px solid #1a1a24;border-radius:12px;padding:20px;margin-bottom:14px}
+    .settings-title{font-size:13px;font-weight:600;color:#e5e7eb;margin-bottom:16px}
+    .form-group{margin-bottom:14px}
+    .form-label{font-size:12px;color:#9ca3af;margin-bottom:6px;display:block;font-weight:500}
+    .form-input{width:100%;padding:9px 12px;background:#1a1a24;border:1px solid #2a2a3a;border-radius:8px;color:#fff;font-size:13px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s}
+    .form-input:focus{border-color:#7c3aed}
+    .form-hint{font-size:11px;color:#4b5563;margin-top:4px}
+    .file-picker{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+    .file-pick-btn{padding:5px 10px;border-radius:6px;background:#1a1a24;border:1px solid #2a2a3a;color:#9ca3af;font-size:11px;font-family:'JetBrains Mono',monospace;cursor:pointer;transition:all .2s}
+    .file-pick-btn:hover,.file-pick-btn.sel{border-color:#7c3aed;color:#a78bfa;background:rgba(124,58,237,.08)}
+    .info-box{background:#1a1a18;border:1px solid #2a2a1a;border-radius:10px;padding:14px;display:flex;gap:10px}
+    .info-icon{color:#fbbf24;flex-shrink:0;margin-top:1px}
+    .info-title{font-size:13px;font-weight:600;color:#d1d5db;margin-bottom:4px}
+    .info-text{font-size:12px;color:#9ca3af;line-height:1.5}
+    code{font-family:'JetBrains Mono',monospace;color:#fbbf24;font-size:11px}
+    /* Logs */
+    .log-box{background:#0d0d0d;border:1px solid #1a1a24;border-radius:12px;overflow:hidden}
+    .log-header{padding:10px 16px;border-bottom:1px solid #1a1a24;display:flex;align-items:center;justify-content:space-between}
+    pre.log-content{font-family:'JetBrains Mono',monospace;font-size:12px;color:#6ee7b7;padding:16px;min-height:300px;max-height:500px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;line-height:1.6}
+    /* Toast */
+    #toast{position:fixed;bottom:20px;right:20px;background:#1e1e2e;border:1px solid #2a2a3a;border-radius:10px;padding:12px 18px;font-size:13px;color:#e5e7eb;transform:translateY(80px);opacity:0;transition:all .3s;z-index:200}
+    #toast.show{transform:translateY(0);opacity:1}
+    svg.icon{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  </style>
+</head>
+<body>
+  <aside>
+    <div class="sidebar-logo">
+      <div class="logo-icon"><svg viewBox="0 0 24 24"><path d="M20 13C20 18 12 22 12 22S4 18 4 13V6L12 3L20 6V13Z"/></svg></div>
+      <div><div class="logo-name">Sulav Hosting</div><div class="logo-sub">Hosting Panel</div></div>
+    </div>
+    <nav>
+      <p class="nav-label">Menu</p>
+      <a href="/dashboard">
+        <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </a>
+      <a href="/logout">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        Logout
+      </a>
+    </nav>
+    <div class="sidebar-footer"><div class="status-dot"></div><span class="status-text">All systems online</span></div>
+  </aside>
+
+  <main>
+    <!-- Header -->
+    <div class="page-header">
+      <a href="/dashboard" class="back-btn">
+        <svg class="icon" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+      </a>
+      <div class="header-info">
+        <div class="header-title">
+          <span class="server-title">{{ server_name }}</span>
+          <span class="badge {% if config.status == 'running' %}badge-running{% else %}badge-stopped{% endif %}">
+            <span class="badge-dot"></span>
+            {{ config.status|capitalize }}
+          </span>
+        </div>
+        <div style="font-size:12px;color:#6b7280;margin-top:2px">
+          {{ config.get('main_file') or 'No main file set' }}
+        </div>
+      </div>
+      <div style="display:flex;gap:8px">
+        {% if config.status == 'running' %}
+        <button class="btn btn-red" onclick="stopServer()">
+          <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18"/></svg>
+          Stop
+        </button>
+        {% else %}
+        <button class="btn btn-green" onclick="startServer()">
+          <svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          Start
+        </button>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('files',this)">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+        Files
+      </button>
+      <button class="tab" onclick="switchTab('packages',this)">
+        <svg class="icon" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+        Packages
+      </button>
+      <button class="tab" onclick="switchTab('settings',this)">
+        <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        Settings
+      </button>
+      <button class="tab" onclick="switchTab('logs',this);loadLogs()">
+        <svg class="icon" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        Logs
+      </button>
+    </div>
+
+    <!-- FILES TAB -->
+    <div id="tab-files" class="tab-panel active">
+      <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+        <input type="file" id="fileInput" accept=".zip,.py,.js,.ts" hidden>
+        <svg class="icon" style="width:32px;height:32px;color:#374151;margin:0 auto 8px" viewBox="0 0 24 24"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
+        <div class="upload-title">Upload ZIP or Python/JS file</div>
+        <div class="upload-sub">Click to browse or drag and drop</div>
+        <div class="upload-note">Supports: .zip, .py, .js, .ts</div>
+        <div id="uploadStatus" style="margin-top:10px;font-size:12px;color:#a78bfa;display:none">Uploading and extracting...</div>
+      </div>
+
+      {% if config.get('main_file') %}
+      <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);border-radius:10px;margin-top:14px;font-size:13px">
+        <svg class="icon" style="color:#a78bfa;flex-shrink:0" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        <span style="color:#d1d5db">Main file: <strong style="color:#a78bfa;font-family:'JetBrains Mono',monospace">{{ config.get('main_file') }}</strong></span>
+        <span style="color:#6b7280;font-size:11px;margin-left:auto">Change in Settings</span>
+      </div>
+      {% endif %}
+
+      {% if files %}
+      <div class="card" style="margin-top:14px">
+        <div class="card-header">
+          <span class="card-title">{{ files|length }} file(s)</span>
+        </div>
+        {% for f in files %}
+        <div class="file-row">
+          <div class="file-icon">
+            {% if f.type == 'dir' %}
+            <svg class="icon" style="color:#fbbf24" viewBox="0 0 24 24"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+            {% else %}
+            <svg class="icon" style="color:#6b7280" viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+            {% endif %}
+          </div>
+          <span class="file-name {% if f.path == config.get('main_file') %}main{% endif %}">
+            {{ f.path }}
+            {% if f.path == config.get('main_file') %}<span class="main-badge">main</span>{% endif %}
+          </span>
+          {% if f.type == 'file' %}
+          <span class="file-size">{{ "%.1f"|format(f.size/1024) }}kb</span>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div style="text-align:center;padding:32px;color:#4b5563;font-size:13px;margin-top:14px">
+        No files yet. Upload a ZIP file to get started.
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- PACKAGES TAB -->
+    <div id="tab-packages" class="tab-panel">
+      <div class="card" style="margin-bottom:14px;padding:18px">
+        <div style="font-size:13px;font-weight:600;color:#e5e7eb;margin-bottom:14px">Install Package</div>
+        <div class="pkg-input-row">
+          <input type="text" id="pkgName" class="pkg-input" placeholder="Package name (e.g. flask, discord.py)" onkeydown="if(event.key==='Enter')installPackage()">
+          <input type="text" id="pkgVer" class="pkg-input" placeholder="Version (optional)" style="max-width:140px">
+          <button class="btn btn-purple" onclick="installPackage()">
+            <svg class="icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Install
+          </button>
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:14px;padding:18px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div style="font-size:13px;font-weight:600;color:#e5e7eb">Popular Packages</div>
+          <input type="text" id="pkgSearch" class="pkg-input" placeholder="Search..." style="max-width:160px;height:30px;padding:4px 10px" oninput="filterChips()">
+        </div>
+        <div class="pkg-chips" id="pkgChips">
+          {% set runtime_packages = {'python': ['flask','fastapi','django','requests','aiohttp','discord.py','python-telegram-bot','tweepy','pandas','numpy','matplotlib','scikit-learn','sqlalchemy','psycopg2','pymongo','redis','celery','pydantic','httpx','boto3','openai','anthropic','langchain'], 'node': ['express','fastify','axios','discord.js','telegraf','socket.io','mongoose','pg','dotenv','jsonwebtoken','bcrypt','cors','openai']} %}
+          {% set pkgs_list = runtime_packages.get('python', []) %}
+          {% set installed_names = config.get('packages', [])|map(attribute='name')|list %}
+          {% for pkg in pkgs_list %}
+          <span class="pkg-chip {% if pkg in installed_names %}installed{% endif %}" data-pkg="{{ pkg }}" onclick="{% if pkg not in installed_names %}quickInstall('{{ pkg }}'){% endif %}">
+            {% if pkg in installed_names %}✓ {% endif %}{{ pkg }}
+          </span>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">{{ config.get('packages', [])|length }} installed package(s)</span>
+        </div>
+        {% if config.get('packages') %}
+        {% for pkg in config.get('packages', []) %}
+        <div class="pkg-row">
+          <div style="width:30px;height:30px;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.2);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg class="icon" style="color:#a78bfa" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+          </div>
+          <span class="pkg-name">{{ pkg.name }}{% if pkg.version %}<span style="color:#4b5563"> v{{ pkg.version }}</span>{% endif %}</span>
+          <span class="pkg-date">{{ pkg.installed_at[:10] if pkg.installed_at else '' }}</span>
+          <button class="btn-danger-sm" onclick="removePackage('{{ pkg.name }}')">Remove</button>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div style="text-align:center;padding:28px;color:#4b5563;font-size:13px">
+          No packages installed yet.
+        </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- SETTINGS TAB -->
+    <div id="tab-settings" class="tab-panel">
+      <div class="settings-card">
+        <div class="settings-title">Project Settings</div>
+        <div class="form-group">
+          <label class="form-label">Main File <span style="color:#a78bfa">*</span></label>
+          <input type="text" id="mainFile" class="form-input" value="{{ config.get('main_file') or '' }}" placeholder="main.py">
+          <div class="form-hint">The entry point file that gets executed when the server starts. e.g. <code>main.py</code>, <code>app.py</code>, <code>bot.py</code></div>
+          {% if files %}
+          <div style="margin-top:10px">
+            <div style="font-size:11px;color:#6b7280;margin-bottom:7px">Pick from uploaded files:</div>
+            <div class="file-picker">
+              {% for f in files %}
+              {% if not f.type == 'dir' and (f.name.endswith('.py') or f.name.endswith('.js') or f.name.endswith('.ts')) %}
+              <button class="file-pick-btn {% if f.path == config.get('main_file') %}sel{% endif %}" onclick="document.getElementById('mainFile').value='{{ f.path }}';document.querySelectorAll('.file-pick-btn').forEach(b=>b.classList.remove('sel'));this.classList.add('sel')">{{ f.path }}</button>
+              {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+          {% endif %}
+        </div>
+        <div class="form-group">
+          <label class="form-label">Port</label>
+          <input type="number" id="serverPort" class="form-input" value="{{ config.get('port', 8080) }}" style="max-width:140px">
+        </div>
+        <button class="btn btn-purple" onclick="saveSettings()">Save Settings</button>
+      </div>
+
+      <div class="info-box">
+        <div class="info-icon">
+          <svg class="icon" style="width:18px;height:18px" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div>
+          <div class="info-title">Railway Deployment</div>
+          <div class="info-text">
+            For Railway, ensure you have a <code>requirements.txt</code> and a <code>Procfile</code>. 
+            Installing packages via the Packages tab will auto-update your <code>requirements.txt</code>.
+            Use <code>gunicorn app:app</code> in your Procfile for web apps.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOGS TAB -->
+    <div id="tab-logs" class="tab-panel">
+      <div class="log-box">
+        <div class="log-header">
+          <span class="card-title" style="display:flex;align-items:center;gap:6px">
+            <svg class="icon" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            Output Logs
+          </span>
+          <button class="btn btn-ghost" style="padding:5px 12px;font-size:11px" onclick="loadLogs()">
+            <svg class="icon" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+            Refresh
+          </button>
+        </div>
+        <pre class="log-content" id="logContent">Click Refresh to load logs...</pre>
+      </div>
+    </div>
+  </main>
+
+  <div id="toast"></div>
+
+  <script>
+    const SERVER = '{{ server_name }}';
+    function toast(msg, color='#a78bfa'){
+      const t=document.getElementById('toast');
+      t.textContent=msg;t.style.borderColor=color;t.classList.add('show');
+      setTimeout(()=>t.classList.remove('show'),3000);
+    }
+    function switchTab(name,el){
+      document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      document.getElementById('tab-'+name).classList.add('active');
+      el.classList.add('active');
+    }
+    // Upload
+    const dz=document.getElementById('dropZone');
+    const fi=document.getElementById('fileInput');
+    fi.onchange=async function(){
+      if(!fi.files[0])return;
+      const fd=new FormData();fd.append('file',fi.files[0]);
+      document.getElementById('uploadStatus').style.display='block';
+      dz.style.pointerEvents='none';
+      const r=await fetch('/server/'+SERVER+'/upload',{method:'POST',body:fd});
+      const d=await r.json();
+      dz.style.pointerEvents='';
+      document.getElementById('uploadStatus').style.display='none';
+      if(d.success){toast('Upload successful! '+d.files.length+' files extracted');setTimeout(()=>location.reload(),1000);}
+      else toast(d.error||'Upload failed','#f87171');
+      fi.value='';
+    };
+    dz.ondragover=e=>{e.preventDefault();dz.classList.add('drag')};
+    dz.ondragleave=()=>dz.classList.remove('drag');
+    dz.ondrop=e=>{e.preventDefault();dz.classList.remove('drag');fi.files=e.dataTransfer.files;fi.onchange()};
+
+    // Packages
+    async function installPackage(name){
+      const n=name||document.getElementById('pkgName').value.trim();
+      const v=document.getElementById('pkgVer')?.value.trim()||'';
+      if(!n){toast('Enter a package name','#f87171');return;}
+      toast('Installing '+n+'...');
+      const r=await fetch('/server/'+SERVER+'/packages/install',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name:n,version:v})});
+      const d=await r.json();
+      if(d.success){toast('Installed '+d.package);setTimeout(()=>location.reload(),1200);}
+      else toast('Failed: '+d.error,'#f87171');
+    }
+    function quickInstall(name){installPackage(name);}
+    async function removePackage(name){
+      if(!confirm('Remove '+name+'?'))return;
+      await fetch('/server/'+SERVER+'/packages/remove',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name})});
+      toast('Removed '+name);setTimeout(()=>location.reload(),1000);
+    }
+    function filterChips(){
+      const q=document.getElementById('pkgSearch').value.toLowerCase();
+      document.querySelectorAll('.pkg-chip').forEach(c=>{
+        c.style.display=c.dataset.pkg.includes(q)?'':'none';
+      });
+    }
+
+    // Settings
+    async function saveSettings(){
+      const mf=document.getElementById('mainFile').value.trim();
+      const port=parseInt(document.getElementById('serverPort').value)||8080;
+      const r=await fetch('/server/'+SERVER+'/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({main_file:mf,port})});
+      const d=await r.json();
+      if(d.success){toast('Settings saved');setTimeout(()=>location.reload(),1000);}
+      else toast(d.error||'Error','#f87171');
+    }
+
+    // Start/Stop
+    async function startServer(){
+      const r=await fetch('/server/'+SERVER+'/start',{method:'POST'});
+      const d=await r.json();
+      if(d.success){toast('Server started (PID '+d.pid+')');setTimeout(()=>location.reload(),1500);}
+      else toast(d.error||'Failed to start','#f87171');
+    }
+    async function stopServer(){
+      const r=await fetch('/server/'+SERVER+'/stop',{method:'POST'});
+      const d=await r.json();
+      if(d.success){toast('Server stopped');setTimeout(()=>location.reload(),1000);}
+      else toast('Error','#f87171');
+    }
+
+    // Logs
+    async function loadLogs(){
+      const r=await fetch('/server/'+SERVER+'/logs');
+      const d=await r.json();
+      const el=document.getElementById('logContent');
+      el.textContent=d.logs||'No logs yet. Start the server to see output.';
+      el.scrollTop=el.scrollHeight;
+    }
+  </script>
+</body>
+</html>
